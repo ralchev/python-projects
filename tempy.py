@@ -1,5 +1,12 @@
 #!/usr/bin/env python -u
-""" A simple Python script that reads data from a temperature sensor on Raspberry Pi and periodically records that temperature with Unix Time Stamp to a SQLite database called tempy.db.
+"""
+Usage: tempy.py
+
+A simple Python script that periodically 
+reads data  from a temperature sensor on
+a Raspberry Pi and writes it together with
+the current time (in Unix Time Stamp) to
+an SQLite database called tempy.db.
 """
 
 import os
