@@ -1,4 +1,6 @@
 #!/usr/bin/env python -u
+""" A simple Python script that reads data from a temperature sensor on Raspberry Pi and periodically records that temperature with Unix Time Stamp to a SQLite database called tempy.db.
+"""
 
 import os
 import glob
@@ -14,37 +16,37 @@ base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28*')[0]
 device_file = device_folder + '/w1_slave'
 
-connection = sqlite.connect('tempy.db')
+con = sqlite.connect('tempy.db')
 
 def tempy_data_write(date, temp):
-    with connection:
-        cur = connection.cursor()
+    with con:
+        cur = con.cursor()
         cur.execute("INSERT INTO data(time, temperature) VALUES(?, ?)", (date, temp))
 
-def tempyReadRawData():
-    f = open(deviceFile, 'r')
+def tempy_read_raw_data():
+    f = open(device_file, 'r')
     lines = f.readlines()
     f.close()
     return lines
 
-def tempyReadData():
-    lines = tempyReadRawData()
+def tempy_read_data():
+    lines = tempy_read_raw_data()
 
     while lines[0].strip()[-3:] != 'YES':
       time.sleep(1)
-      lines = tempyReadRawData()
+      lines = tempy_read_raw_data()
 
-    equalsPos = lines[1].find('t=')
+    equals_pos = lines[1].find('t=')
 
-    if equalsPos != 1:
-        tempString = lines[1][equalsPos+2:]
-        tempC = float(tempString) / 1000.0
-        return tempC
+    if equals_pos != 1:
+        temp_string = lines[1][equals_pos+2:]
+        temp_c = float(temp_string) / 1000.0
+        return temp_c
 
 while True:
-    currentTimeUT = time.time()
-    currentTimeRT = datetime.datetime.fromtimestamp(currentTimeUT).strftime('%Y-%m-%d %H:%M:%S')
-    temp = tempyReadData()
-
-    tempyDataWrite(currentTimeUT, temp)
+    current_time_ut = time.time()
+    current_time_rt = datetime.datetime.fromtimestamp(current_time_ut).strftime('%Y-%m-%d %H:%M:%S')
+    temp = tempy_read_data()
+    tempy_data_write(current_time_ut, temp)
     time.sleep(899)
+
